@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace dotnet_eark_sip_tests;
 public class MetsSerializationTests : IDisposable {
-	private readonly string sampleXmlPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "METS_example.xml");
+	private readonly string sampleXmlPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "METS", "METS_example.xml");
 	private readonly string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "Output");
 
 	public MetsSerializationTests() {
@@ -58,7 +58,7 @@ public class MetsSerializationTests : IDisposable {
 	public void Serialize_MetsObject_ShouldProduceValidXml()
 	{
 		// Generate basic METS object
-		MetsType mets = new() { MetsHdr = new MetsTypeMetsHdr { Createdate = DateTime.Parse("2024-01-29T12:00:00") } };
+		Mets.Mets mets = new() { MetsHdr = new MetsTypeMetsHdr { Createdate = DateTime.Parse("2024-01-29T12:00:00") } };
 
 		mets.MetsHdr.Agent.Add(new MetsTypeMetsHdrAgent {
 			Role = MetsTypeMetsHdrAgentRole.CREATOR,
