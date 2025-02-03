@@ -65,6 +65,11 @@ namespace IP {
       return metadataType;
     }
 
+    public IPMetadata SetMetadataType(IMetadataMdtype metadataType) {
+      this.metadataType = new MetadataType(metadataType);
+      return this;
+    }
+
     public IPMetadata SetMetadataType(MetadataType metadataType) {
       this.metadataType = metadataType;
       return this;

@@ -22,10 +22,10 @@ public class METSZipEntryInfo : FileZipEntryInfo {
         // TODO: Add logger
         METSUtils.SetFileBasicInformation(FilePath, fileType);
 
-        IFilecoreChecksumtype checksumType = Checksum;
-        HashSet<string> checksumAlgorithms = new HashSet<string>();
+        IFilecoreChecksumtype checksumType = ChecksumAlgorithm;
+        HashSet<IFilecoreChecksumtype> checksumAlgorithms = new HashSet<IFilecoreChecksumtype>();
         using (FileStream inputStream = File.Create(FilePath)) {
-          Dictionary<string, string> checksums = ZIPUtils.CalculateChecksums(null, inputStream, checksumAlgorithms);
+          Dictionary<IFilecoreChecksumtype, string> checksums = ZIPUtils.CalculateChecksums(null, inputStream, checksumAlgorithms);
           string checksum = Checksums[checksumType];
           fileType.Checksum = checksum;
           fileType.Checksumtype = checksumType;
