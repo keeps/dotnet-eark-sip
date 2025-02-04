@@ -35,17 +35,11 @@ public class ZipWriteStrategy : IWriteStrategy {
     }
 
     try {
-      DeleteFilesFromDirectory(zipPath);
+      if(File.Exists(zipPath)) File.Delete(zipPath);
     } catch (IOException e) {
       throw new IPException("Error deleting already existing zip", e);
     }
 
     return zipPath;
-  }
-
-  private void DeleteFilesFromDirectory(string path) {
-    foreach (string file in Directory.GetFiles(path)) {
-      File.Delete(file);
-    }
   }
 }

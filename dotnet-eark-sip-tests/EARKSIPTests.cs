@@ -4,15 +4,15 @@ using Mets;
 namespace dotnet_eark_sip_tests;
 
 public class EARKSIPTests : IDisposable {
-  private static string REPRESENTATION_STATUS_NORMALIZED = "NORMALIZED";
-  private static string tempFolder = "";
+  private readonly string REPRESENTATION_STATUS_NORMALIZED = "NORMALIZED";
+  private readonly string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "earksip_tests");
 
-  public EARKSIPTests() {
-    tempFolder = Directory.CreateDirectory("temp").FullName;
-  }
+	public EARKSIPTests() {
+		Directory.CreateDirectory(outputPath);
+	}
 
   public void Dispose() {
-    Utils.DeleteDirectory(tempFolder);
+    // Utils.DeleteDirectory(tempFolder);
   }
 
   [Fact]
@@ -23,7 +23,7 @@ public class EARKSIPTests : IDisposable {
     // TODO: Add additional verifications
   }
 
-  private static string CreateFullEARKSIPForTestCompliance() {
+  private string CreateFullEARKSIPForTestCompliance() {
     // 1) instantiate E-ARK SIP object
     SIP sip = new EARKSIP("SIP_1", IPContentType.GetMIXED(), IPContentInformationType.GetMIXED(), "2.1.0");
     sip.AddCreatorSoftwareAgent("KEEPS .NET E-ARK SIP", "1.0.0");
@@ -127,7 +127,7 @@ public class EARKSIPTests : IDisposable {
     representation2.AddFile(representationFile3);
 
     // 2) build SIP, providing an output directory
-    IWriteStrategy writeStrategy = SIPBuilderUtils.GetWriteStrategy(WriteStrategyEnum.ZIP, tempFolder);
+    IWriteStrategy writeStrategy = SIPBuilderUtils.GetWriteStrategy(WriteStrategyEnum.ZIP, outputPath);
     string zipSIP = sip.Build(writeStrategy);
 
     return zipSIP;

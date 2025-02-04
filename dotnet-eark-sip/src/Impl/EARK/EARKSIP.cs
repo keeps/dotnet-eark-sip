@@ -57,14 +57,14 @@ public class EARKSIP : SIP {
 
   public override string Build(IWriteStrategy writeStrategy, string fileNameWithoutExtension, bool onlyManifest, SIPType sipType) {
     IPConstants.METS_ENCODE_AND_DECODE_HREF = true;
-    DirectoryInfo buildDir = ModelUtils.CreateBuildDir(SIP_TEMP_DIR);
+    string buildDir = ModelUtils.CreateBuildDir(SIP_TEMP_DIR).FullName;
 
     EARKUtils earkUtils = new EARKUtils(metsCreator);
 
     try {
       Dictionary<string, IZipEntryInfo> zipEntries = GetZipEntries();
       // TODO: Add logger
-      earkUtils.AddDefaultSchemas(GetSchemas(), buildDir.FullName, GetOverride());
+      earkUtils.AddDefaultSchemas(GetSchemas(), buildDir, GetOverride());
 
       bool isMetadataOther = GetOtherMetadata() != null && GetOtherMetadata().Count > 0;
       bool isMetadata = (GetDescriptiveMetadata() != null && GetDescriptiveMetadata().Count > 0) || (GetPreservationMetadata() != null && GetPreservationMetadata().Count > 0);
@@ -93,7 +93,7 @@ public class EARKSIP : SIP {
       earkUtils.AddDescriptiveMetadataToZipAndMETS(zipEntries, mainMETSWrapper, GetDescriptiveMetadata(), null);
       earkUtils.AddPreservationMetadataToZipAndMETS(zipEntries, mainMETSWrapper, GetPreservationMetadata(), null);
       earkUtils.AddOtherMetadataToZipAndMETS(zipEntries, mainMETSWrapper, GetOtherMetadata(), null);
-      earkUtils.AddRepresentationsToZipAndMETS(this, GetRepresentations(), zipEntries, mainMETSWrapper, buildDir.FullName, sipType);
+      earkUtils.AddRepresentationsToZipAndMETS(this, GetRepresentations(), zipEntries, mainMETSWrapper, buildDir, sipType);
       earkUtils.AddSchemasToZipAndMETS(zipEntries, mainMETSWrapper, GetSchemas(), null);
       earkUtils.AddDocumentationToZipAndMETS(zipEntries, mainMETSWrapper, GetDocumentation(), null);
 
@@ -105,7 +105,7 @@ public class EARKSIP : SIP {
       ModelUtils.CleanUpUponInterrupt(writeStrategy.DestinationPath);
       throw e;
     } finally {
-      ModelUtils.DeleteBuildDir(buildDir.FullName);
+      ModelUtils.DeleteBuildDir(buildDir);
     }
   }
 

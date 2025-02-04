@@ -75,8 +75,8 @@ namespace IP {
       return this;
     }
 
-    public MetadataStatus getMetadataStatus() {
-      return metadataStatus;
+    public string getMetadataStatus() {
+      return metadataStatus.ToString();
     }
 
     public IPMetadata setMetadataStatus(MetadataStatus metadataStatus) {
