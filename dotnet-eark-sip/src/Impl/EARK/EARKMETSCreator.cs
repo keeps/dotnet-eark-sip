@@ -675,10 +675,7 @@ public abstract class EARKMETSCreator {
       DivType dataDiv = CreateDivForStructMap(dataDivsTree.Root.Label);
 
       if (dataDiv.Fptr.Count == 0 && dataFileGrp[dataDiv.Label] != null) {
-        DivTypeFptr fptr = new DivTypeFptr
-        {
-          Fileid = dataFileGrp[dataDiv.Label].Id
-        };
+        DivTypeFptr fptr = new DivTypeFptr { Fileid = dataFileGrp[dataDiv.Label].Id };
         dataDiv.Fptr.Add(fptr);
       }
 
@@ -713,18 +710,14 @@ public abstract class EARKMETSCreator {
       Tree<StructMapDiv> childNode = divTree.AddChild(new StructMapDiv(fileRelativeFolders.First()), divTree.Root);
       AddNodes(childNode, fileLocation, fileRelativeFolders.Skip(1).ToList());
     }
-  }
+  }  
 
   protected void CreateDataDiv(Tree<StructMapDiv> dataDivsTree, DivType dataDiv) {
     if (dataDivsTree.Children.Count > 0) {
       foreach (Tree<StructMapDiv> child in dataDivsTree.Children) {
         DivType div = CreateDivForStructMap(child.Root.Label);
-        if (div.Fptr.Count == 0 && dataFileGrp[child.Root.FileLocation] != null) {
-          DivTypeFptr fptr = new DivTypeFptr
-          {
-            Fileid = dataFileGrp[child.Root.FileLocation].Id
-          };
-
+        if (div.Fptr.Count == 0 && !string.IsNullOrEmpty(child.Root.FileLocation) && dataFileGrp.ContainsKey(child.Root.FileLocation)) {
+          DivTypeFptr fptr = new DivTypeFptr { Fileid = dataFileGrp[child.Root.FileLocation].Id };
           div.Fptr.Add(fptr);
         }
 
