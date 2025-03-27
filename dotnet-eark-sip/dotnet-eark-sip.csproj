@@ -15,7 +15,6 @@
     <Description>A .NET library and CLI tool for creating E-ARK Submission Information Packages (SIPs). Providing support for E-ARK SIP formats (2.0.4, 2.1.0, 2.2.0), this project makes it easier to create and manage valid SIPs for long-term digital preservation using the E-ARK standards.</Description>
     <Title>.NET E-ARK SIP</Title>
     <PackageTags>EARK;SIP;Archiving;DigitalPreservation;Metadata;XML;SubmissionInformationPackage </PackageTags>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>José Boticas,Paulo Lima,Luís Faria,Miguel Ferreira</Authors>
     <Owners>IGFEJ</Owners>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -33,6 +32,8 @@
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PackageLicenseExpression>EUPL-1.2</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="src\Resources\ControlledVocabularies\IANA_MEDIA_TYPES.txt" />
