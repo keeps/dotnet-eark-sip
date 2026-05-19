@@ -28,6 +28,10 @@ public class Program {
         Example4.Run();
         break;
 
+      case "5":
+        Example5.Run(args.Length > 1 ? args[1] : null);
+        break;
+
       default:
         Console.WriteLine("Example {0} not found", exampleToRun);
         break;
