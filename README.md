@@ -1,3 +1,8 @@
+# !! PROJECT WAS ARCHIVED !!
+# PROJECT MOVED TO https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/
+
+
+
 # .NET E-ARK SIP
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/igfej-justica-gov-pt/dotnet-eark-sip/CI.yml?branch=main)](https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/actions)  
