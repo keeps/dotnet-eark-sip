@@ -37,6 +37,7 @@ namespace IP
 
         private IFilecoreChecksumtype checksumAlgorithm;
         private bool _override;
+        private ValidationReport? validationReport;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IP"/> class.
@@ -744,6 +745,26 @@ namespace IP
         {
             _override = true;
             return this;
+        }
+
+        /// <summary>
+        /// Gets the validation report for this IP, lazily initialised on first access.
+        /// </summary>
+        /// <remarks>
+        /// Populated during parsing (see <c>EARKSIP.Parse</c>) and accessible to callers that
+        /// want to inspect ERROR/WARN/INFO entries collected during read or validation.
+        /// </remarks>
+        public ValidationReport GetValidationReport()
+        {
+            return validationReport ??= new ValidationReport();
+        }
+
+        /// <summary>
+        /// Indicates whether this IP is considered valid (no ERROR entries in the validation report).
+        /// </summary>
+        public bool IsValid()
+        {
+            return validationReport == null || validationReport.IsValid;
         }
 
         private void CheckIfRepresentationExists(string representationID)
