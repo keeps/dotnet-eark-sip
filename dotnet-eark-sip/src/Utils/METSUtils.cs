@@ -266,6 +266,112 @@ public static class METSUtils
     }
 
     /// <summary>
+    /// Decodes the given HREF value (inverse of <see cref="EncodeHref"/>).
+    /// </summary>
+    /// <param name="value">The encoded HREF value, typically read from a METS <c>FLocat/@xlink:href</c> or <c>MdRef/@xlink:href</c>.</param>
+    /// <returns>The decoded HREF value.</returns>
+    public static string DecodeHref(string value)
+    {
+        if (IPConstants.METS_ENCODE_AND_DECODE_HREF)
+        {
+            try
+            {
+                return Uri.UnescapeDataString(value);
+            }
+            catch
+            {
+                return value;
+            }
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// Deserialises a METS XML document from disk into a <see cref="Mets.Mets"/> object graph.
+    /// </summary>
+    /// <param name="metsFilePath">Absolute path to the METS.xml file.</param>
+    /// <param name="report">Optional report; on failure an ERROR entry is added and <c>null</c> is returned.</param>
+    /// <returns>The deserialised <see cref="Mets.Mets"/>, or <c>null</c> on failure.</returns>
+    /// <remarks>
+    /// Uses the same XSD-generated <see cref="Mets.Mets"/> class graph that the writer serialises to,
+    /// so the deserialisation surface is symmetric with <see cref="MarshallMETS"/>.
+    /// </remarks>
+    public static Mets.Mets? UnmarshalMETS(string metsFilePath, ValidationReport? report = null)
+    {
+        if (!File.Exists(metsFilePath))
+        {
+            report?.AddError(ValidationConstants.METS_FILE_NOT_FOUND, "METS file not found", metsFilePath);
+            return null;
+        }
+
+        try
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Mets.Mets));
+            using (FileStream stream = new FileStream(metsFilePath, FileMode.Open, FileAccess.Read))
+            using (XmlReader reader = XmlReader.Create(stream))
+            {
+                return (Mets.Mets?)serializer.Deserialize(reader);
+            }
+        }
+        catch (Exception e) when (e is InvalidOperationException || e is XmlException || e is IOException)
+        {
+            report?.AddError(ValidationConstants.METS_UNMARSHAL_FAILED, "Failed to parse METS XML", metsFilePath, e.Message);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Detects the E-ARK SIP specification version from a root METS file's <c>@PROFILE</c> attribute.
+    /// </summary>
+    /// <param name="metsFilePath">Path to the root METS.xml.</param>
+    /// <param name="report">Optional report; an INFO entry is added when falling back to the default.</param>
+    /// <returns>One of <c>"2.0.4"</c>, <c>"2.1.0"</c>, <c>"2.2.0"</c>; defaults to <c>"2.1.0"</c> if unknown.</returns>
+    /// <remarks>
+    /// Performs a lightweight <see cref="XmlReader"/> scan rather than full deserialisation so that version
+    /// can be detected before instantiating a version-specific parser.
+    /// </remarks>
+    public static string DetectMETSVersion(string metsFilePath, ValidationReport? report = null)
+    {
+        const string defaultVersion = "2.1.0";
+
+        if (!File.Exists(metsFilePath))
+        {
+            report?.AddError(ValidationConstants.METS_FILE_NOT_FOUND, "METS file not found", metsFilePath);
+            return defaultVersion;
+        }
+
+        try
+        {
+            using (FileStream stream = new FileStream(metsFilePath, FileMode.Open, FileAccess.Read))
+            using (XmlReader reader = XmlReader.Create(stream))
+            {
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "mets")
+                    {
+                        string? profile = reader.GetAttribute("PROFILE");
+                        if (profile != null)
+                        {
+                            if (profile.Contains("-v2-0-4")) return "2.0.4";
+                            if (profile.Contains("-v2-1-0")) return "2.1.0";
+                            if (profile.Contains("-v2-2-0")) return "2.2.0";
+                            report?.AddInfo(ValidationConstants.METS_UNKNOWN_PROFILE,
+                                $"Unrecognised METS profile, defaulting to {defaultVersion}", metsFilePath, profile);
+                        }
+                        return defaultVersion;
+                    }
+                }
+            }
+        }
+        catch (Exception e) when (e is XmlException || e is IOException)
+        {
+            report?.AddError(ValidationConstants.METS_UNMARSHAL_FAILED, "Failed to read METS while detecting version", metsFilePath, e.Message);
+        }
+
+        return defaultVersion;
+    }
+
+    /// <summary>
     /// Escapes special characters in the input string to make it safe for use in URLs or XML.
     /// </summary>
     /// <param name="input">The input string containing special characters.</param>

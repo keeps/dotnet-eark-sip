@@ -157,6 +157,119 @@ public static class ZIPUtils
     }
 
     /// <summary>
+    /// Extracts a SIP that may be ZIP-packaged into <paramref name="destinationDirectory"/>.
+    /// </summary>
+    /// <param name="source">The .zip file (or, defensively, an already-extracted directory).</param>
+    /// <param name="destinationDirectory">Directory where the ZIP will be extracted. Must exist or be creatable.</param>
+    /// <returns>The path to the SIP root (the directory that directly contains <c>METS.xml</c>).</returns>
+    /// <remarks>
+    /// If, after extraction, the destination directory does not directly contain <c>METS.xml</c>,  the method peeks one 
+    /// level deeper to find a single subfolder that does — this handles SIPs produced by writers that wrap  content in a 
+    /// <c>{sipId}/</c> folder.
+    /// </remarks>
+    /// <exception cref="IPException">Thrown if <paramref name="source"/> cannot be extracted as a ZIP.</exception>
+    public static string ExtractIPIfInZipFormat(string source, string destinationDirectory)
+    {
+        if (Directory.Exists(source))
+        {
+            return source;
+        }
+
+        try
+        {
+            Unzip(source, destinationDirectory);
+        }
+        catch (Exception e) when (e is IOException || e is InvalidDataException || e is UnauthorizedAccessException)
+        {
+            throw new IPException("Error unzipping file: " + source + " -> " + destinationDirectory + " (" + e.GetType().Name + ": " + e.Message + ")", e);
+        }
+
+        string ipFolderPath = destinationDirectory;
+        if (Directory.Exists(destinationDirectory) && !File.Exists(Path.Combine(destinationDirectory, IPConstants.METS_FILE)))
+        {
+            foreach (string child in Directory.EnumerateDirectories(destinationDirectory))
+            {
+                if (File.Exists(Path.Combine(child, IPConstants.METS_FILE)))
+                {
+                    ipFolderPath = child;
+                    break;
+                }
+            }
+        }
+
+        return ipFolderPath;
+    }
+
+    /// <summary>
+    /// Extracts a ZIP archive into the destination directory, overwriting any files already there.
+    /// </summary>
+    /// <param name="zip">Path to the ZIP file.</param>
+    /// <param name="destination">Destination directory; created if missing.</param>
+    /// <remarks>
+    /// Implemented manually (entry-by-entry) rather than via <c>ZipFile.ExtractToDirectory</c> because the latter
+    /// refuses to overwrite existing files.
+    /// </remarks>
+    public static void Unzip(string zip, string destination)
+    {
+        if (!Directory.Exists(destination))
+        {
+            Directory.CreateDirectory(destination);
+        }
+
+        string normalisedDest = Path.GetFullPath(destination);
+        char sep = Path.DirectorySeparatorChar;
+
+        using (ZipArchive archive = ZipFile.OpenRead(zip))
+        {
+            foreach (ZipArchiveEntry entry in archive.Entries)
+            {
+                // Skip directory entries.
+                if (string.IsNullOrEmpty(entry.Name))
+                {
+                    string dirPath = Path.Combine(normalisedDest, entry.FullName.Replace('/', sep));
+                    Directory.CreateDirectory(dirPath);
+                    continue;
+                }
+
+                string targetPath = Path.GetFullPath(Path.Combine(normalisedDest, entry.FullName.Replace('/', sep)));
+
+                // Defensive: prevent path traversal outside the destination.
+                if (!targetPath.StartsWith(normalisedDest, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new IOException("ZIP entry escapes destination directory: " + entry.FullName);
+                }
+
+                string? targetDir = Path.GetDirectoryName(targetPath);
+                if (!string.IsNullOrEmpty(targetDir) && !Directory.Exists(targetDir))
+                {
+                    Directory.CreateDirectory(targetDir);
+                }
+
+                entry.ExtractToFile(targetPath, overwrite: true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Computes a single-algorithm checksum over a stream.
+    /// </summary>
+    /// <remarks>
+    /// Read-side helper used during file verification. Distinct from <see cref="CalculateChecksums"/>, which
+    /// is multi-algorithm and tied to the zip-writing loop.
+    /// </remarks>
+    /// <param name="input">The stream to checksum. Caller owns its lifetime; this method does not dispose it.</param>
+    /// <param name="algorithm">Checksum algorithm to use.</param>
+    /// <returns>Hex-encoded upper-case checksum string (e.g. <c>"A1B2..."</c>), matching the format the writer produces.</returns>
+    public static string CalculateChecksum(Stream input, IFilecoreChecksumtype algorithm)
+    {
+        using (HashAlgorithm hash = HashAlgorithm.Create(EnumUtils.GetXmlEnumName(algorithm)))
+        {
+            byte[] result = hash.ComputeHash(input);
+            return BitConverter.ToString(result).Replace("-", "").ToUpperInvariant();
+        }
+    }
+
+    /// <summary>
     /// Calculates checksums for a given stream using specified checksum algorithms.
     /// </summary>
     /// <param name="zipOutputStream">The optional output stream for the ZIP archive.</param>

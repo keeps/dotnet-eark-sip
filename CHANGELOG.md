@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- E-ARK SIP parser: support for reading and validating existing E-ARK SIP packages from ZIP archives.
+- `EARKMETSParser` abstract base class for deserialising METS XML and extracting the E-ARK structural map and its first-level divisions.
+- `EARKMETSParser204` and `EARKMETSParser210` version-specific subclasses handling CSIP 2.0.4 and 2.1.0 differences.
+- `EARKReadUtils` orchestrator that walks a parsed `MetsWrapper` (dmdSec, amdSec, fileSec, structMap) and populates the `IP`/`SIP`/`IPRepresentation` object graph, including checksum verification.
+- `EARKSIP` extended with a `Parse` method that accepts a ZIP path, extracts it, and returns a fully populated `SIP` with a `ValidationReport`.
+- `IReadStrategy` / `ZipReadStrategy` and their factories (`ReadStrategyFactory`, `ZipReadStrategyFactory`) providing a strategy pattern for ZIP extraction.
+- `ZIPUtils` helper for extracting ZIP archives to a temporary directory.
+- `METSUtils` extended with `UnmarshalMETS` for deserialising a METS XML file into the object model.
+- `ValidationConstants` with structured validation event identifiers used throughout the parser.
+- `ValidationEntry` and `ValidationReport` models for collecting and reporting parse/validation issues.
+- `IP` base class extended with `GetValidationReport`, `SetIds`, `SetCreateDate`, `SetModificationDate`, `SetStatus`, and `SetType` members required by the parser.
+- Example 5 (`Example5.cs`) demonstrating SIP parsing from a ZIP file.
+- Parse tests (`ParseTests.cs`) and roundtrip tests (`RoundtripTests.cs`) covering the new read path.
+
 ## [1.0.5] - 2025-12-29
 
 ### Fixed
@@ -52,3 +70,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.3]: https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/compare/1.0.2...1.0.3
 [1.0.4]: https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/compare/1.0.3...1.0.4
 [1.0.5]: https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/compare/1.0.4...1.0.5
+[1.0.6]: https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/compare/1.0.5...1.0.6

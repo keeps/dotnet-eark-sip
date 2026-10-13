@@ -214,4 +214,95 @@ public class EARKSIP : SIP
     {
         return new HashSet<IFilecoreChecksumtype>();
     }
+
+    /// <summary>
+    /// Parses an E-ARK SIP ZIP archive into a fully populated <see cref="SIP"/> object graph.
+    /// </summary>
+    /// <param name="source">Path to the .zip file containing the SIP.</param>
+    /// <returns>The parsed <see cref="SIP"/>. Inspect <c>sip.GetValidationReport()</c> and <c>sip.IsValid()</c> to check for issues.</returns>
+    /// <remarks>
+    /// Creates a temporary directory for extraction. To control the extraction location, use the
+    /// <see cref="Parse(string, string)"/> overload.
+    ///
+    /// Errors during parsing (malformed METS, missing files, checksum mismatches, unsupported algorithms) are
+    /// recorded as ERROR entries on the SIP's <see cref="ValidationReport"/>; the method only throws if the
+    /// source cannot be opened as a ZIP or no destination directory can be created.
+    /// </remarks>
+    public static SIP Parse(string source)
+    {
+        string tempDir = Path.Combine(Path.GetTempPath(), "dotnet-eark-sip-extracted-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDir);
+        return Parse(source, tempDir);
+    }
+
+    /// <summary>
+    /// Parses an E-ARK SIP ZIP archive into a fully populated <see cref="SIP"/> object graph, extracting into the given directory.
+    /// </summary>
+    /// <param name="source">Path to the .zip file containing the SIP.</param>
+    /// <param name="destinationDirectory">Directory to extract the SIP into. Caller owns its lifetime.</param>
+    /// <returns>The parsed <see cref="SIP"/>. Inspect <c>sip.GetValidationReport()</c> and <c>sip.IsValid()</c> to check for issues.</returns>
+    /// <exception cref="IPException">Thrown if <paramref name="source"/> cannot be opened or extracted.</exception>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="source"/> is null or empty.</exception>
+    public static SIP Parse(string source, string destinationDirectory)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            throw new ArgumentException("Source path must be provided.", nameof(source));
+        }
+        if (!File.Exists(source) && !Directory.Exists(source))
+        {
+            EARKSIP earlyFailSip = new EARKSIP();
+            earlyFailSip.GetValidationReport().AddError(
+                ValidationConstants.SOURCE_NOT_FOUND,
+                "SIP source does not exist",
+                source);
+            return earlyFailSip;
+        }
+
+        IPConstants.METS_ENCODE_AND_DECODE_HREF = true;
+
+        EARKSIP sip = new EARKSIP();
+        ValidationReport report = sip.GetValidationReport();
+
+        IReadStrategy readStrategy = new ZipReadStrategyFactory().Create(destinationDirectory);
+        string sipPath;
+        try
+        {
+            sipPath = readStrategy.Read(source);
+        }
+        catch (IPException e)
+        {
+            report.AddError(ValidationConstants.ZIP_EXTRACTION_FAILED, "Failed to extract SIP", source, e.Message);
+            return sip;
+        }
+
+        sip.SetBasePath(sipPath);
+
+        string mainMetsPath = Path.Combine(sipPath, IPConstants.METS_FILE);
+        string detectedVersion = METSUtils.DetectMETSVersion(mainMetsPath, report);
+        EARKMETSParser parser = new METSGeneratorFactory().GetParser(detectedVersion);
+        EARKReadUtils readUtils = new EARKReadUtils(parser);
+
+        MetsWrapper mainWrapper = readUtils.ProcessMainMETS(sip, sipPath);
+        if (mainWrapper.Mets == null)
+        {
+            // Catastrophic parse failure already logged; nothing further to do.
+            return sip;
+        }
+
+        StructMapType? structMap = parser.ExtractStructMap(mainWrapper, report, true);
+        if (structMap != null)
+        {
+            parser.PreProcessStructMap(mainWrapper, structMap);
+
+            readUtils.ProcessDescriptiveMetadata(mainWrapper, sip, null, sipPath);
+            readUtils.ProcessOtherMetadata(mainWrapper, sip, null, sipPath);
+            readUtils.ProcessAdministrativeMetadata(mainWrapper, sip, null, sipPath);
+            readUtils.ProcessRepresentations(mainWrapper, sip);
+            readUtils.ProcessSchemasAndDocumentation(mainWrapper, sip, sipPath);
+            readUtils.ProcessAncestors(mainWrapper, sip);
+        }
+
+        return sip;
+    }
 }
