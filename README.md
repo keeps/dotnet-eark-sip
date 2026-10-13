@@ -1,3 +1,8 @@
+# !! PROJECT WAS ARCHIVED !!
+# PROJECT MOVED TO https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/
+
+
+
 # .NET E-ARK SIP
 
 [![License](https://img.shields.io/badge/license-EUPL-blue.svg)](#license)
