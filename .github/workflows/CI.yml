@@ -23,10 +23,10 @@ jobs:
         run: dotnet restore
 
       - name: Run Tests
-        run: dotnet test dotnet-eark-sip-tests/dotnet-eark-sip-tests.csproj --configuration Release --no-restore --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test eark-sip-4net-tests/eark-sip-4net-tests.csproj --configuration Release --no-restore --logger "trx;LogFileName=test-results.trx"
 
       - name: Build Library
-        run: dotnet build dotnet-eark-sip/dotnet-eark-sip.csproj --configuration Release --no-restore
+        run: dotnet build eark-sip-4net/eark-sip-4net.csproj --configuration Release --no-restore
 
       - name: Build CLI
-        run: dotnet build dotnet-eark-sip-cli/dotnet-eark-sip-cli.csproj --configuration Release --no-restore
+        run: dotnet build eark-sip-4net-cli/eark-sip-4net-cli.csproj --configuration Release --no-restore

@@ -1,9 +1,4 @@
-# !! PROJECT WAS ARCHIVED !!
-# PROJECT MOVED TO https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/
-
-
-
-# .NET E-ARK SIP
+# E-ARK SIP for .NET
 
 [![License](https://img.shields.io/badge/license-EUPL-blue.svg)](#license)
 
@@ -79,14 +74,14 @@ Round-trip safety is verified by tests that build a SIP and parse it back, asser
 
 ## Usage
 
-You can use **dotnet-eark-sip** as a **command-line tool** or as a **.NET library** (by referencing it in your project).
+You can use **eark-sip-4net** as a **command-line tool** or as a **.NET library** (by referencing it in your project).
 
 ### Use as a Command-line Tool
 
 The CLI exposes the create path. Run:
 
 ```bash
-dotnet-eark-sip-cli create
+eark-sip-4net-cli create
 ```
 
 #### Available options
@@ -120,7 +115,7 @@ dotnet-eark-sip-cli create
 #### Example
 
 ```bash
-dotnet-eark-sip-cli create --metadata-files metadata.xml --metadata-types ead --metadata-schemas ead2002.xsd \
+eark-sip-4net-cli create --metadata-files metadata.xml --metadata-types ead --metadata-schemas ead2002.xsd \
 --representation-data-lists dataFile1.pdf,dataFolder1,dataFile2.png \
 --sip-id sip1 --ancestors sip2,sip3 --documentation documentation1,documentationFolder \
 --path outputFolder --submitter-name agent1 --submitter-id 123
@@ -133,7 +128,7 @@ dotnet-eark-sip-cli create --metadata-files metadata.xml --metadata-types ead --
 #### Install the package via NuGet
 
 ```bash
-dotnet add package dotnet-eark-sip
+dotnet add package eark-sip-4net
 ```
 
 #### Creating a SIP
@@ -237,7 +232,7 @@ The parser auto-detects the spec version from `METS/@PROFILE` (supports **2.0.4*
 
 #### In-depth usage
 
-Look into the repository's [dotnet-eark-sip-examples](./dotnet-eark-sip-examples) folder for more in-depth usage patterns and advanced features. `Example1` through `Example4` demonstrate creating SIPs; `Example5` demonstrates parsing.
+Look into the repository's [eark-sip-4net-examples](./eark-sip-4net-examples) folder for more in-depth usage patterns and advanced features. `Example1` through `Example4` demonstrate creating SIPs; `Example5` demonstrates parsing.
 
 ## Contributing
 
@@ -288,4 +283,4 @@ For full details, please refer to the [EUPL licence text](https://joinup.ec.euro
 - Developer: José Boticas (KEEP SOLUTIONS)
 - Project manager: Paulo Lima (KEEP SOLUTIONS)
 - Consultants: Luís Faria and Miguel Ferreira (KEEP SOLUTIONS)
-- Upstream project: [igfej-justica-gov-pt/dotnet-eark-sip](https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/)
+- Forked from: [igfej-justica-gov-pt/dotnet-eark-sip](https://github.com/igfej-justica-gov-pt/dotnet-eark-sip/)

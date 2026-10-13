@@ -18,23 +18,23 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore dotnet-eark-sip/dotnet-eark-sip.csproj
+        run: dotnet restore eark-sip-4net/eark-sip-4net.csproj
 
       - name: Build library (Snapshot)
-        run: dotnet build dotnet-eark-sip/dotnet-eark-sip.csproj --configuration Release --no-restore
+        run: dotnet build eark-sip-4net/eark-sip-4net.csproj --configuration Release --no-restore
 
       - name: Set snapshot version
         id: snapshot_version
         shell: pwsh
         run: |
-          [xml]$csproj = Get-Content dotnet-eark-sip/dotnet-eark-sip.csproj
+          [xml]$csproj = Get-Content eark-sip-4net/eark-sip-4net.csproj
           $version = $csproj.Project.PropertyGroup.Version + "-SNAPSHOT"
           $csproj.Project.PropertyGroup.Version = $version
-          $csproj.Save('dotnet-eark-sip/dotnet-eark-sip.csproj')
+          $csproj.Save('eark-sip-4net/eark-sip-4net.csproj')
           "version=$version" >> $GITHUB_OUTPUT
 
       - name: Pack NuGet Package (Snapshot)
-        run: dotnet pack dotnet-eark-sip/dotnet-eark-sip.csproj -c Release --no-build -o ./dist
+        run: dotnet pack eark-sip-4net/eark-sip-4net.csproj -c Release --no-build -o ./dist
 
       - name: Publish to GitHub Packages (Snapshot)
-        run: dotnet nuget push "dist/dotnet-eark-sip.${{ steps.snapshot_version.outputs.version }}.nupkg" --source "https://nuget.pkg.github.com/keeps/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+        run: dotnet nuget push "dist/eark-sip-4net.${{ steps.snapshot_version.outputs.version }}.nupkg" --source "https://nuget.pkg.github.com/keeps/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate

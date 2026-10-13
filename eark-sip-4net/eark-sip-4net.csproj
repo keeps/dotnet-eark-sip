@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <DebugType>Embedded</DebugType>
+        <EmbedAllSources>True</EmbedAllSources>
+        <LangVersion>10.0</LangVersion>
+        <RootNamespace>eark_sip_4net</RootNamespace>
+        <PackageId>eark-sip-4net</PackageId>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Version>1.0.0</Version>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <IncludeSymbols>True</IncludeSymbols>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Description>A .NET library and CLI tool for creating and reading E-ARK Submission Information Packages (SIPs). Supports E-ARK SIP formats 2.0.4, 2.1.0, and 2.2.0, making it easier to produce and consume valid SIPs for long-term digital preservation according to the E-ARK standards.</Description>
+        <Title>E-ARK SIP for .NET</Title>
+        <PackageTags>EARK;SIP;Archiving;DigitalPreservation;Metadata;XML;SubmissionInformationPackage</PackageTags>
+        <Authors>José Boticas,Paulo Lima,Luís Faria,Miguel Ferreira</Authors>
+        <Owners>KEEP SOLUTIONS</Owners>
+        <Company>KEEP SOLUTIONS</Company>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <RepositoryUrl>https://github.com/keeps/eark-sip-4net</RepositoryUrl>
+        <PackageIcon>assets\eark-sip-4net-icon.png</PackageIcon>
+        <Copyright>Copyright © KEEP SOLUTIONS. Based on dotnet-eark-sip by IGFEJ.</Copyright>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+    <PropertyGroup>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <PackageLicenseExpression>EUPL-1.2</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="src\Resources\ControlledVocabularies\IANA_MEDIA_TYPES.txt" />
+        <None Remove="src\Resources\Schemas\DILCISExtensionMETS.xsd" />
+        <None Remove="src\Resources\Schemas\DILCISExtensionSIPMETS.xsd" />
+        <None Remove="src\Resources\Schemas\mets1_12_1.xsd" />
+        <None Remove="src\Resources\Schemas\xlink.xsd" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="src\Resources\ControlledVocabularies\IANA_MEDIA_TYPES.txt" />
+        <EmbeddedResource Include="src\Resources\Schemas\DILCISExtensionMETS.xsd" />
+        <EmbeddedResource Include="src\Resources\Schemas\DILCISExtensionSIPMETS.xsd" />
+        <EmbeddedResource Include="src\Resources\Schemas\mets1_12_1.xsd" />
+        <EmbeddedResource Include="src\Resources\Schemas\xlink.xsd" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="assets\eark-sip-4net-icon.png">
+            <Pack>True</Pack>
+            <PackagePath>assets\</PackagePath>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+        <PackageReference Include="MimeTypesMap" Version="1.0.9" />
+        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    </ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-title: dotnet-eark-sip
-description: A .NET library for creating E-ARK SIPs
+title: eark-sip-4net
+description: A .NET library for creating and reading E-ARK SIPs
 show_downloads: false
 theme: jekyll-theme-cayman
